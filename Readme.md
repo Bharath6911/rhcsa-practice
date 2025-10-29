@@ -176,3 +176,5 @@ Explanation of the command breakdown:
 
 That’s Day 1 of my RHCSA practice.
 I will continue to add more questions.
+Thank you
+ 
