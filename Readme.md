@@ -16,7 +16,7 @@ DNS: `172.24.40.1`
 ### Answer:
 
 I SSH’d through PuTTY to my node1 Red Hat Linux system. I used VMware Workstation Pro with Red Hat 10 (latest version from Developers Red Hat learning page).
-Commands used:
+Commands used :
 
 ```
 ls /etc/NetworkManager/system-connections/
@@ -175,4 +175,4 @@ Explanation of the command breakdown:
 ---
 
 That’s Day 1 of my RHCSA practice.
-I will continue to add more questions.
+I will continue to add more questions good luck.
