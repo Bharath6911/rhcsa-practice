@@ -1,0 +1,7 @@
+@"
+*.mp4
+*.iso
+*.zip
+*.7z
+*.tar
+"@ | Out-File -Encoding ascii .gitignore

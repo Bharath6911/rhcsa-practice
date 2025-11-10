@@ -1,0 +1,122 @@
+So started studying redhat today 29-oct-2025
+QUESTION 1
+Configure your Host Name, IP Address, Gateway and DNS.
+Host name: station.domain40.example.com
+/etc/sysconfig/network
+hostname=abc.com
+hostname abc.com
+IP Address:172.24.40.40/24
+Gateway172.24.40.1
+DNS:172.24.40.1
+
+Answer:
+i ssh through putty to my node 1 redhat Linux OS and redhat1 username in my system with my vmware workstation pro installed the commands iam using are for the redhat 10 latest version downloaded from developers red hat learning page 
+
+>ls /etc/NetworkManager/system-connections/  ------ this will show the connection like ens160.nmconnection
+>sudo nmcli con mod ens160 ipv4.addresses 172.24.40.40/24
+>sudo nmcli con mod ens160 ipv4.gateway 172.24.40.40
+>sudo nmcli con mod ens160 ipv4.dns 172.24.40.1
+>sudo nmcli con mod ens160 ipv4.method manual
+>sudo nmcli con mod ens160 connection.autoconnect yes
+>sudo hostnamectl set-hostname station.domain40.example.com
+ check it which these commands 
+>hostnamectl
+ restart the connection
+>sudo nmcli con reload ens160
+>sudo nmcli con up ens160
+use it at the end if you want to disconnect your putty
+>sudo nmcli con down ens160
+
+to show the answer 
+>ip addr show ens160
+>cat /etc/resolv.conf
+>hostname
+>nmcli con show ens160 | grep ipv4
+
+You should now see:
+
+IP: 172.24.40.40/24
+
+Gateway: 172.24.40.1
+
+DNS: 172.24.40.1
+
+Hostname: station.domain40.example.com
+
+QUESTION 2
+Add 3 users: harry, natasha, tom.
+The requirements: The Additional group of the two users: harry, Natasha is the admin group. The user: tom's
+login shell should be non-interactive.
+Answer: 
+
+>grep admin /etc/group ----- find the if admin named group exists  or not
+>sudo groupadd admin ------ if you don't find the admin named user
+>useradd -G admin harry ------ add user harry to admin group 
+>useradd -G admin natasha  ------ add user natasha to admin group
+>useradd -s /sbin/nologin tom  ------ set the tom user to sbin/nologin files 
+
+-G admin adds the user to the admin group as a secondary group.
+-s /sbin/nologin makes tom non-interactive (he can’t log in).
+
+>id harry;id Natasha (Show additional group)
+>grep tom /etc/passwd ---- to know where is tom
+>cat /etc/passwd
+(Show the login shell)
+
+QUESTION 3 
+Create a catalog under /home named admins. Its respective group is requested to be the admin group. The group users could read and write, while other users are not allowed to access it. The files created by users from the same group should also be the admin group. 
+Answer:
+
+>cd /home
+>mkdir admins
+>chown :admin admins
+>chmod 770 admins ---- changing the directory format to write/read/exec/ for owner and group but no permissions for others
+>chmod g+s admins ---- sets the permissions of this directory to any file created in it 
+>ls -id admins
+
+QUESTION 4
+Configure a task: plan to run echo hello command at 14:23 every day.
+Answer: 
+
+>which echo ---- to know the path of echo mostly you'll see "/bin/echo"
+>crontab -l ---- to know what cronjobs are running if not then
+>crontab -e ---- create a crontab with this inside "23 14 * * * /bin/echo hello"
+here 23 means minutes 
+     14 means hours
+     * means every day
+     * means every month
+     * means every weekday
+
+>crontab -l ---- to verify the crontab created or not 
+to test it out or see if it runs at that time use this inside crontab -e >"23 14 * * * /bin/echo hello >> /home/cronlog.txt" it will create a txt file cronlog and print hello in it every day at 14:23
+
+QUESTION 5 
+Find the files owned by harry, and copy it to catalog: /opt/dir 
+Answer:
+
+>cd /opt
+>mkdir dir
+>find / -user harry -exec cp -rfp {} /opt/dir/ \;
+
+so what is this big line of command lets find out :
+
+ find / -user harry
+This means: “Search the entire system from the root / for files owned by the user harry.”
+
+-exec cp -rfp {} /opt/dir/ \;
+The -exec part says: “For each file found, run this command.”
+
+cp = copy
+
+-r = recursive (copy directories too)
+
+-f = force (overwrite if needed)
+
+-p = preserve permissions, ownership, timestamps
+
+{} = placeholder for each file found
+
+/opt/dir/ = destination
+
+\; = tells find the command ends here
+
