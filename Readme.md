@@ -180,7 +180,7 @@ Thank you
 
 ---
 
- ## today Date 2025-11-05 
+ ## Today Date 2025-11-05 
 
  ## QUESTION 6
 
@@ -275,7 +275,7 @@ Explanation of the command breakdown:
 ### What I did today 
  
 * Started the **Udemy course**: [Prepare RHCSA with Practice Course (Unofficial)](https://www.udemy.com/course/prepare-rhcsa-with-practice-course-unoffical) 
-  Took the 90-day free trial. I’ll see how much it helps and document progress here. 
+  Took the 90-day free trial of redhat developer subcription. I’ll see how much it helps and progress here. 
  
 --- 
  
