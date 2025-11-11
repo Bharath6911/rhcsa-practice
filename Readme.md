@@ -389,3 +389,79 @@ Still working through those.
  
 --- 
  
+
+### What I did today 2025-11-11
+
+- Fixed a NAT/internet issue in VMware for my RHEL 10 VM and prepared an offline local repository so package installs work without internet access.
+
+### Problem
+
+- The RHEL VM couldn't reach the internet (VMware NAT misconfiguration). I needed to install packages on an offline machine using the RHEL/CentOS installation ISO.
+
+### Solution 
+
+- Attach or mount the RHEL/CentOS install ISO on the VM, create a local repository that points to the mounted media, disable online repos, then use the local repo for package installation. Optionally copy the ISO contents to a local folder (e.g. /repo) so the repository remains available if the media is removed.
+
+### Commands / examples
+
+Check existing repo files:
+
+```
+ls /etc/yum.repos.d
+```
+
+Create or edit a local repo file (example: `/etc/yum.repos.d/local.repo`):
+
+```
+[BaseOS]
+name=BaseOS
+baseurl=file:///run/media/<user>/RHEL-*/BaseOS
+enabled=1
+gpgcheck=0
+
+[AppStream]
+name=AppStream
+baseurl=file:///run/media/<user>/RHEL-*/AppStream
+enabled=1
+gpgcheck=0
+```
+
+Disable any online repos (example):
+
+```
+sudo sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/centos.repo
+sudo sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/centos-addons.repo
+sudo yum clean all
+sudo yum repolist
+```
+
+You should see only the local repos in the list, for example:
+
+```
+repo id    repo name
+BaseOS     BaseOS
+AppStream  AppStream
+
+```
+
+Test installing a package from the local repo:
+
+```
+sudo yum install httpd -y
+```
+
+Optional — make a persistent local copy of the install media (recommended so the repo survives media unmount):
+
+```
+sudo mkdir -p /repo/BaseOS /repo/AppStream
+sudo cp -irv /run/media/*/BaseOS/*/repo/BaseOS/* /repo/BaseOS/
+sudo cp -irv /run/media/*/AppStream/*/repo/AppStream/* /repo/AppStream/
+```
+
+Notes
+
+- `cp -irv`: `-i` interactive (asks before overwrite), `-r` recursive, `-v` verbose.
+- If you're unsure about yum/dnf usage, read the man page: `man yum` or `man dnf`.
+- Replace `<user>` or wildcard paths with the actual mount point shown on your system (for example `/run/media/bharath/...`).
+
+---
