@@ -388,13 +388,12 @@ Downloaded a few networking PDFs to start reading about switches, routers, MAC a
 Still working through those. 
  
 --- 
- 
 
-### What I did today 2025-11-11
+## Day (2025-11-11) 
+
+### What I did today 
 
 - Fixed a NAT/internet issue in VMware for my RHEL 10 VM and prepared an offline local repository so package installs work without internet access.
-
-### Problem
 
 - The RHEL VM couldn't reach the internet (VMware NAT misconfiguration). I needed to install packages on an offline machine using the RHEL/CentOS installation ISO.
 
