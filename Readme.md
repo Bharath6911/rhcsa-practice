@@ -464,3 +464,185 @@ Notes
 - Replace `<user>` or wildcard paths with the actual mount point shown on your system (for example `/run/media/bharath/...`).
 
 ---
+
+
+### Today 12-nov-2025 
+
+---
+
+searched for some python book to know some knowledge in python for an free online resource where we can study online > https://automatetheboringstuff.com/
+I continued with the udemy course in details.
+In the sections managing software aside from DNF online and local repos Got to know flatpaks and how to install from a remote repos how to add these in different areas like:
+system wide or user wide applications we can get to know about the commands using the --help command `> flatpak --help `
+
+```
+
+>flatpak --help
+>flatpak list
+>flatpak remotes
+>flatpak remote-ls --app rhel_or_fedora_or_flatpak
+>flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
+>flattpak remotes --system
+>flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+>flatpak remotes --user
+>flatpak list
+>flatpak install fedora puTTY
+
+```
+
+After that i wanted to practice again how to add hostname and adding forward backward dns  in the hosts file and again add another os to the network of RHEL 10 the main system and the centos which is connected to RHEL 
+
+Used kali linux because wanted to practice python and networking thinks kali had better understanding things so yeah.check these : 
+
+```
+>nmcli con show 
+>ip link sh
+>nmcli con mod ens225 ipv4.addresses 192.168.159.11/24
+>nmcli con mod ens225 ipv4.gateway 192.168.159.10
+>nmcli con mod ens225 ipv4.dns 192.168.159.10
+>nmcli con mod ens225 ipv4.method manual
+>nmcli con mod ens225 ipv4.never-default yes
+>hostnamectl set-hostname kali.domain40.example.com 
+>hostname 
+>nmcli con show ens225
+>ping 192.168.159.10
+
+```
+
+
+---
+
+### Today 13-nov-2025
+
+---
+
+**Started with the user management and went deep inside what variable does in each command like for example question :**
+
+**Create a user named riya with uid 6001 and assign a home directory with /riya/private and her password mush be changed at the first login with a spam period of 30 days.**
+
+```
+>useradd -u 6001 -d /riya/private riya
+```
+
+Here we have created a user with name riya and given her a UID numbers and a home directory of her own which can be accessed by her you can see the permission levels using the command 
+
+```
+>ls -ld /riya/private
+```
+
+I have created this user as per the course instructor question from the section and not only that we need to create a password renewal every span of 30 days so we used 
+
+```
+>chage riya 
+```
+
+This will allow us to give passwd age, account expiration such settings 
+
+```
+root@station:~# chage riya
+Changing the aging information for riya
+Enter the new value, or press ENTER for the default
+
+	Minimum Password Age [0]: 
+	Maximum Password Age [99999]: 30
+	Last Password Change (YYYY-MM-DD) [2025-11-13]: 0
+	Password Expiration Warning [7]: 
+	Password Inactive [1]: 
+	Account Expiration Date (YYYY-MM-DD) [-1]: 
+root@station:~# chage -l riya
+Last password change					: password must be changed
+Password expires					: password must be changed
+Password inactive					: password must be changed
+Account expires						: never
+Minimum number of days between password change		: 0
+Maximum number of days between password change		: 30
+Number of days of warning before password expires	: 7
+root@station:~# passwd riya
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: password updated successfully
+root@station:~# chage -l riya
+Last password change					: Nov 13, 2025
+Password expires					: Dec 13, 2025
+Password inactive					: Dec 14, 2025
+Account expires						: never
+Minimum number of days between password change		: 0
+Maximum number of days between password change		: 30
+Number of days of warning before password expires	: 7
+root@station:~# more /etc/shadow | grep riya
+riya:$y$j9T$72oD2HKSGYlnVPTAumHzR1$ul8sTSATaqVMoU6HuAd9I8clUkTAnsVpfq/tQYUK1vA:20405:0:30:7:1::
+root@station:~# passwd -S riya
+riya P 2025-11-13 0 30 7 1
+
+```
+---
+
+### Practice question 
+
+**Create a group named redhat it should have GID as 5555 and assign a user named lisa as supplementary or secondary group.**  
+
+```
+root@station:~# groupadd -g 5555 redhat
+root@station:~# usermod -aG redhat lisa
+root@station:~# more /etc/group | grep redhat
+wheel:x:10:redhat1
+redhat1:x:1000:
+redhat:x:5555:lisa
+root@station:~# id lisa
+uid=6000(lisa) gid=6000(lisa) groups=6000(lisa),5555(redhat)
+
+```
+
+### Practice question 
+
+**Create user with username vivek and set password as access but Account should expire on 31st Dec current year (2025) and Password should expire every 70 days and Set password expiry warning to 4 days.**
+
+```
+root@station:/home# useradd vivek
+
+root@station:/home# passwd vivek
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: password updated successfully
+root@station:/home# chage vivek
+Changing the aging information for vivek
+Enter the new value, or press ENTER for the default
+
+	Minimum Password Age [0]: 
+	Maximum Password Age [99999]: 70
+	Last Password Change (YYYY-MM-DD) [2025-11-13]: 
+	Password Expiration Warning [7]: 4
+	Password Inactive [1]: 
+	Account Expiration Date (YYYY-MM-DD) [-1]: 2025-12-31
+root@station:/home# chage -l vivek
+Last password change					: Nov 12, 2025
+Password expires					: Jan 21, 2026
+Password inactive					: Jan 22, 2026
+Account expires						: Dec 30, 2025
+Minimum number of days between password change		: 0
+Maximum number of days between password change		: 70
+Number of days of warning before password expires	: 4
+root@station:/home# more /etc/shadow |grep vivek
+vivek:$y$j9T$HRZ949XhKaxFbqvnCkq76.$f.PCh4k3csFrcRa/h1u2jySOP2uxOCKTQT9.R62ucX/:20404:0:70:4:1:20452:
+root@station:/home# passwd -S vivek
+vivek P 2025-11-12 0 70 4 1
+root@station:/home# 
+
+```
+
+**In my previous session practices i created a user harry so i wanted to delete the user used the command wrong which was**
+
+```
+
+>userdel harry # But this will not remove him from the other folders you can check by these commands 
+>getent passwd harry
+>getent shadow harry
+>getent group harry
+>pkill -u harry # you well see their are files of him to remove completely use 
+>userdel -r harry  # -r means recursively delete everything 
+
+```
+
+---
