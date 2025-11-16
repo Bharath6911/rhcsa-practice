@@ -777,4 +777,25 @@ Explanation and answer:
 # pwd                            ---  current directory should be home directory of /ldap/home/ldap1
 ```
 
+**Create user (username)maria on System with default user settings and Delete user maria from system.example.com and User's home directory and mailbox should also be deleted**
 
+Explanation and answer:
+
+```
+# useradd maria                   ---  To create user maria with default user settings
+# userdel -r maria                ---  To delete user maria, also home directory and mail spool
+# userdel --help                  ---  To check help for userdel
+```
+
+**Configure superuser access for user `harry` to enable him to use root privileges with sudo and create a user with username `testuser` using sudo**
+
+Explanation and answer:
+
+```
+# more /etc/sudoers               --- To verify line %Wheel    ALL=(ALL)   ALL is not commented
+# usermod -aG wheel harry         --- To add user harry to wheel group
+# sudo whoami                     --- To verify the access 
+# sudo useradd testuser           --- To create user using sudo
+```
+
+---
