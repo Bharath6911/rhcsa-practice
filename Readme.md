@@ -646,3 +646,135 @@ root@station:/home#
 ```
 
 ---
+
+### Today 15-nov-2025
+
+**Today going to do some questions**
+
+## QUESTION 9
+
+**Install a FTP server, and request to anonymous download from /var/ftp/pub catalog. (it needs you to configure yum direct to the already existing file server. )**
+
+Explanation :
+```
+# cd /etc/yum.repos.d
+# vim local.repo
+[local]
+name=local.repo
+baseurl=file:///mnt
+enabled=1
+# yum makecache
+# yum install -y vsftpd
+# service vsftpd restart
+# chkconfig vsftpd on
+# chkconfig --list vsftpd
+# vim /etc/vsftpd/vsftpd.conf
+anonymous_enable=YES
+```
+
+## QUESTION 10
+
+**Configure a HTTP server, which can be accessed through http://station.domain40.example.com and Please download the released page from http://ip/dir/example.html.**
+
+Explanation:
+```
+# yum install -y httpd
+# systemctl start httpd
+# cd /var/www/html
+# wget http://ip/dir/example.html # its provided in the exam 
+# cp example.com index.html
+# vim /etc/httpd/conf/httpd.conf
+NameVirtualHost 192.168.0.254:80
+<VirtualHost 192.168.0.254:80>
+DocumentRoot /var/www/html/
+ServerName station.domain40.example.com
+</VirtualHost>
+# curl station.domain40.example.com
+```
+## Questions from course 
+
+**Create the directory /dir and set the group and user ownership to redhat and lisa respectively and give readonly access to group redhat and rwx access to lisa.**
+
+Explanation and answer:
+
+```
+# sudo -i 
+# cd home
+# mkdir /dir
+# chown lisa:redhat /dir
+# ls -ld /dir
+```
+**Configure System (system.example.com) as IPA client to use LDAP services configured on IPA Server with Free IPA Server solution and Use user admin and password as password to enroll System and ldap users should be able to login on System.**
+
+Explanation and answer:
+
+```
+dnf install ipa-client  ---  To install package for ipa client
+ipa-client-install      ---  Configuring System as IPA Client
+su - Idap               ---  Verify Idap user login
+```
+
+---
+
+### Today 16-Nov-2025
+
+I learned about autofs 
+
+autofs -Mounting file systems on demand 
+
+autofs service is used to mount the filesystems on demand which means filesystem gets mounted automatically when it is accessed and unmounted when it is not used.
+
+when we mount filesystem through fstab file, it remains mounted no matter if filesystem is accessed or not and system has to allocate dedicated resources to keep the mounted system in place. So, this is not good practice specially for infrequently accessed filesystems because it can cause performance issues when there are multiple such filesystems.
+
+autofs can mount Nfs, smd, cifs and local filesystems. We will use autofs to mount LDAP user's home directories which are exported as NFS filesystems on ipa server
+
+autofs conf files:
+1. the master map file(/etc/auto.master)
+2. Map-file
+
+## Questions from course 
+
+**Configure system.example.com to automount home directory of LDAP user Idap when logged in and Home directory of LDAP user is /home/ldapuser/Idap and Home directory is exported by ipaserver.example.com as NFS export and LDAP user should get his home directory when logged in.**
+
+Explanation and answer:
+
+```
+rpm -q autofs                   --- to know if the autofs is instaled or not
+#dnf install autofs              --- To install packages required for autofs
+#systemctl start autofs          --- To start autofs service 
+#systemctl enable autofs          --- configuring to start service at the reboot
+#more /etc/autofs.conf            --- to see if everything is configured correctly 
+#dnf group list --hidden          --- to list the hidden group list of packages and look for 'Network file system client' then
+#dnf groupinstall 'Network file system client'     --- to install it 
+# showmount -e ipaserver.example.com
+/idap/home      *
+/home/idapuser  *
+/nfsshare       *      ----to get to know the list of exports pick one you need 
+
+#vim /etc/auto.master 
+/home/idapuser    /etc/auto.idap    -rw  --- to define master automounter map
+#vim /etc/auto.idap 
+idap     ipaserver.example.com:home/idapuser/idap       --- creating a new file auto.idap add this line 'idap     ipaserver.example.com:home/idapuser/idap '
+#systemctl restart autofs         --- restart autofs service 
+#su - idap                       ---  switch to idap
+#pwd                            ---  current directory should be idap user's home directory 
+```
+
+**Configure system.example.com to automount home directories of LDAP users Idap1 and Idap2 and Home directories of LDAP users Idap1 and Idap2 are /Idap/home/Idap1 and /Idap/home/Idap2 respectively and Home directories are shared by ipaserver.example.com through NFS export and LDAP user should get his home directory when logged in.**
+
+Explanation and answer:
+
+```
+# dnf install autofs             ---  installing autofs 
+# systemctl start autofs         ---  starting autofs service 
+# systemctl enable autofs        ---  configuring autofs to start at reboot 
+# vim /etc/auto.master           ---  to define base location for home directory 
+/idap/home       /etc/auto.idap12     
+# vim /etc/auto.idap12
+*     ipaserver.example.com:/idap/home/&
+# systemctl restart autofs         ---  restarting autofs service 
+# su - idap1                     ---  switch user to ldap1
+# pwd                            ---  current directory should be home directory of /ldap/home/ldap1
+```
+
+
