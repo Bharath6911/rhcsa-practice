@@ -799,3 +799,33 @@ Explanation and answer:
 ```
 
 ---
+
+### Today 17-Nov-2025
+
+## Understanding and using essential tools
+
+- Introduction to ssh and some common topics.
+To install ssh - dnf install opensssh-server
+To install ssh client  - dnf install openssh-server
+
+**Establish SSH connection to ipaserver.example.com from system.example.com use user ldap to make this connection**
+
+```
+# systemctl status sshd             --- to check status of sshd service on IPA server 
+# firewall-cmd --list all           --- To verify ssh inbound traffic is allowed on IPA server 
+# ssh idap@ipaserver.example.com or # ssh -l user_name hostname_of_server  --- To establish ssh connection as user ldap 
+  enter the password for idap user  
+# hostnamectl                       --- verify user ldap is connected to IPA server 
+# man ssh                           --- manual page for openssh client 
+# man sshd                          --- manual page for openssh daemon 
+```
+
+**Securely copy /root/file.txt file using scp from the ipaserver.example.com to /tmp directory on system.example.com and use username ldap to connect to remote system and password as password for this task**
+
+```
+# scp /root/file.txt ldap@system.example.com:/tmp/   --- to transfer file securely with  scp( onIPA server)
+# password : ****                  --- enter password
+# man scp                          --- manual page for SCP
+```
+
+---
