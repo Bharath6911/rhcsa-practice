@@ -829,3 +829,150 @@ To install ssh client  - dnf install openssh-server
 ```
 
 ---
+
+### Today 18-Nov-2025
+
+## Input/Output Redirection 
+
+**File descriptor**
+
+A file descriptor is a number that uniduely identifies an open file in a computer's operating syatem. In Linux, kernel assigns each open file descriptor which is used as reference by kernel to perform operations on the file. Each process is assigned three file descriptors for standard (i/o and error) for redirection.
+
+Standard output redirection (override)   --- > filename
+append mode                              --- >> filename 
+Standard input redirection               --- < filename
+Standard error redirection (override)    --- 2> filename
+Standard error redirection (Append)      --- 2>> filename
+Both Standard output & error redirection (override)   --- >& filename
+Both Standard output & error redirection (append)   --- >>& filename
+
+---
+
+### Using grep and regular expressions 
+
+grep - print lines from files with matching pattern 
+
+Regular expression is a pattern which is set of strngs. Regular expressions are formed by combining smaller expressions using different operators.
+
+
+- BREs(Basic regular Expressions) : Meta characters like ?,+,{,|,(,) has no meaning specially. They are treated normally 
+Ex:
+`abc|xyz` would match exactly same sub-string in the line but but abc OR xyz in the line so in ERE | (infix operator) has special meaning of ateration.
+
+- EREs(Extended regular expression) : meta  characters  mentioned above has special meaning in expression.
+Ex:
+we need to specify option -E with grep(grep -E) to use ERE or use egrep Default is BRE syntax 
+
+
+---
+
+### Today 19-Nov-2025
+
+**Understanding grep with examples**
+
+```
+# grep abc file1 file2     --- display's the matched lines 
+`file1:abcefgh`
+# grep abc -h file1        --- display's the matched line but not with a file name 
+`abcd`
+# grep abc -h -o file1     --- display's the only line or character matched in the line
+`abc`
+# grep a.u file1 file2     --- display's the characters matched from a to u 
+`file2: baluji`
+# echo abc 'abc' "abc"     --- echo display's what ever expression in the quotes but it has some except some times  
+abc abc abc 
+# grep [abc] file1 file2   --- display's every character in a line 
+# grep [a-c] file1 file2   --- same as above 
+# egrep [a-d] file1 file2  --- same as above but in EREs expression
+# grep ^abc file1 file2    --- displays pattern starting with abc 
+# grep efgh$ file1 file2   --- displays pattern ending with efgh
+# egrep '^abc|efgh$' file1 file2    --- displays's starting pattern and ending pattern of the expression 'abc|efgh$' 
+# grep -E '^abc|efgh$' file1 file2  or egrep ^abc\|efgh$ file1 file2 ---  both work same as above one 
+# grep -F [kinnera] file1 file2     --- gets the exact expression as [kinnera]
+# egrep a?b file1 file2             --- gets the a and b and ab 
+# egrep a*b file1 file2             --- gets the a, ab,bb,ab,ba 
+# egrep a+b file1 file2             --- gets only ab in any line not just ab but full line
+# egrep a{5} file1 file2            --- gets a repeated 5 times word or line but only small letter
+# egrep -i a{5} file1 file2            --- gets the a repeated 5 times regardless of upper or lower case 
+
+```
+
+
+## Questions from the course 
+
+**Copy all lines starting with word SeD or sed from /temp/file.txt and copy /root/match.**
+Explanation and answer:
+
+```
+# man grep                   --- manual page for grep command
+# egrep '^SeD|^sed' /tmp/file.txt > /root/match         ---  Search and copy lines starting with SeD or sed
+# more /root/match            --- to verify if the lines are copied.
+# some other command using grep
+# egrep -v -n '^SeD|^sed' /tmp/file.txt > /root/invert         ---  search and cody lines not starting with sed SeD 
+# egrep -i '^sed|except' /tmp/file.txt > /root/result         ---   To copy required lines
+# more /root/result 
+```
+
+## Using find command to search filesystems
+
+**find - To search files in directory hierarchy**
+
+like grep find is also a very powerful command and supports multiple options 
+EX:
+# find -P / -name somefile -type f -print
+
+This command finds all the regular files named `somefile` under /(root) recursively 
+
+find command examples :
+```
+# man find                                    --- manual page for find command
+# find / -name test -type f -delete            --- search all regular files inde / with name test and delete them 
+# find -user lisa -type -exec cp '{}' /root/files \;       --- search all regular files owned by lisa and copy them to specified directory start to current (dir)
+# find / -name *.txt -type f > /root/textfiles 2>&1        --- search all regular files under / with extention .txt and save output in the file 
+# find . -perm 664                       ---  search files which have r/w permissions for user and group but read for others
+# find / -perm /222                    ---  search files writable by someone starting from /
+# find / -perm /u+w,g+w,o+w            ---  above command using different way 
+# find / -uid 1001 -type f -print      ---  search all regular files owned by user with uid 1001 and print STDOUT
+# find $HOME -mtime 0                  ---  search all files in your home directiory which were modified in last 24 hours 
+```
+
+## Question from course 
+
+**Save all the files(regular files ) owned by user in /root/lisa-files.**
+
+```
+# find / -user lisa -type f > /root/lisa-files       ---  To find lisa's files and save the output in specified file
+# more /root/lisa-files                              ---  To verify results 
+```
+
+**Locate all regular files owned by lisa and copy them under /root/files directory.**
+
+```
+# mkdir /root/files               --- creating directory 
+# find / -user lisa -type f -exec cp '{}' /root/files \;       ---  Locating and copying files 
+```
+
+**Locate the file smb.conf searching through / and save the output of find command in /conf file and STDERR should not be saved.**
+
+```
+# find / -name smb.conf -type f > /conf         ---  To find required file and save the output to file 
+# more /conf                                    ---  To verify results 
+```
+
+**Locate the file .txt searching through / and save the output of find command in /text file and STDERR should not be saved.**
+
+```
+# find / -name '*.txt' -type f > /text 2>&1            --- To find files with extension .txt and save output 
+# more /text
+```
+
+
+## some find command uses 
+
+```
+# find . -amin -5                  ---  we can see which files have been accessed last 5 minutes 
+# find . -daystart -amin -5                 ---  it will take biggening day time 
+# stat file_name                   ---  states the file description like date or created modified and  accessed id's etc
+```
+
+---
