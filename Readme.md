@@ -975,4 +975,132 @@ find command examples :
 # stat file_name                   ---  states the file description like date or created modified and  accessed id's etc
 ```
 
+
 ---
+
+### Today 24-Nov-2025
+
+## Decompressing files using gunzip and bunzip
+
+## Questions from course 
+
+**Use gunzip command to decompress contents of /root/etc.tar.gzand use bunzip2 command to decompress contents of /root/home.tar.bz2**
+
+Explanation and answer:
+
+```
+# gunzip /root/etc.tar.gz                    ---  To decompress contents of /root/etc.tar.gz
+# bunzip2 /root/home.tar.bz2                 ---  To decompress contents of /root/home.tar.bz2
+# man gunzip
+# man bunzip2 
+```
+
+**Using vim editor**
+
+Vim editor is the improved version of vi editor and is used to edit plain text files and program files. Below is the list of vim editor modes:
+
+- Normal mode 
+- Insert mode
+- Command mode 
+
+Normal mode is default mode and we can move around lines using different letters as listed
+```
+l to move cursor right 
+h to move cursor left 
+k to move cursor up 
+j to move cursor down 
+r to replace character 
+x to delete character
+u to undo changes
+I switch to insert mode and you can type
+a Moves the cursor one position next to current and changes to insert mode 
+o Inserts a new line below the current line and changes to insert mode 
+I(capital I) Moves cursor to the end of line and changes to insert mode 
+A Moves cursor to the end of line and changes to insert mode
+O inserts a line above current line and changes to insert mode in new line 
+```
+
+Command mode can do much more then normal mode To enter into the command mode we use (colon) : in normal and then type the command we need 
+
+```
+: Changes to command mode from Normal mode.
+:%s/foo/bar/g To replace foo with bar in file, all accurrences are replaced.
+:w to write to file 
+:wq write to file and quit 
+:q! Quit file without saving changes done 
+```
+
+## Introduction to filesystem permissions
+
+read   --- in file users are allowed to read the content of the file and in Directory it allow the users to list files under directory 
+write  --- in file users are allowed to read and write the content of the file and in Directory it allow the users to create new files and list files under directory 
+execute  --- in file users are allowed to execute binary code in the file and in Directory it allow the users to navigate or move to directory 
+
+[root@station redhat1]# ls -l file1
+-rw-r--r--. 1 redhat1 redhat1 107 Nov 19 19:00 file1
+
+We have a 10 bit at the starting of the file being views [-]this is a directory or not here it's not a directory its a file [rw-]Here it for the user permission read and write but not executable file by the user [r--]here its for the groups permissions read only [r--] here its for the permissions of others only readable 
+
+## Introducing important commands 
+
+```
+# chown --- To set user owner and group ownership of filesystem
+# man chown
+# chmod --- To configure permissions using permission mode bits
+# man chmod
+# setfacl --- To configure ACL's Access control lists for additional user access
+```
+
+## Symbolic representation method 
+
+```
+# chmod ugo+rwx file_path  --- This is the syntax for changing the permissions of a file in a path or file only we can change according to the permission like u+rw only user will get the read write permissions and others will not get any permissions.
+# chmod ugo-rwx   ---   we can also remove the permissions using the - between the command. 
+```
+
+## Numeric mode representation method 
+
+```
+read only ---  [r--] = 4+0+0 = 4
+write only --- [-w-] = 0+2+0 = 2
+execute only 1 --- [--x] = 0+0+1 = 1
+read, write --- [rw-] = 4+2+0 6
+read, execute --- [r-x] = 4+0+1 = 5
+write, execute --- [-wx] = 0+2+1 = 3
+read, write, execute --- [rwx] = 4+2+1 = 7
+
+example :
+
+# chmod 0600 file_path --- provides read/write permissioms on file to user and owner and removes all other permissions for groups and others if they exist.
+# chmod 0766 dir_path --- Provides all pemissions to user owner and read/write permissions to group ans others.
+# chmod --reference=Rfile_name other_file ---  permissions of a file will be given to the other file 
+```
+
+**Create directory /test and set the user ownership to lisa and group ownership to group (create a group) and remove all the permissions for others on this directory and configure full oermissions at group level.**
+
+Explanations and answer:
+
+```
+# mkdir /test
+# groupadd group 
+# chown lisa:group /test 
+# chmod 770 /test
+# chmod g+w,o-rx /test 
+# ls -ld /test
+# man chmod 
+# man chown 
+```
+
+## Access Control Lists 
+
+Access control lists are used to configure additional user access.
+
+types: 
+Access ACL's to configure access on files and directory 
+Default ACL's to configure access on directories 
+
+```
+# setfacl -m u:lisa:rwx file_path    --- configuring additional user access for user lisa 
+# setfacl -x u:lisa file_path        --- Remove ACL entry for user lisa
+# setfacl -m d:u harry:rwx Dir_path  --- Configuring defsult ACL on directory
+```
