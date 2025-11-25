@@ -1103,4 +1103,101 @@ Default ACL's to configure access on directories
 # setfacl -m u:lisa:rwx file_path    --- configuring additional user access for user lisa 
 # setfacl -x u:lisa file_path        --- Remove ACL entry for user lisa
 # setfacl -m d:u harry:rwx Dir_path  --- Configuring defsult ACL on directory
+# setfacl -b file_path               --- remove all the extended ACl entries on the file 
+# setfacl -b dir_path                --- To remove default ACL on directory 
 ```
+---
+
+### Today 25-Nov-2025
+
+## intro to ACL part 2
+
+```
+# touch acl-file
+# ls -l acl-file
+# getfacl /root/acl-file
+```
+getfacl: Removing leading '/' from absolute path names
+# file: root/acl-file
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+```
+# setfacl -m u:vivek:rwx /root/acl-file
+# ls -l acl-file
+# getfacl /root/acl-file
+```
+getfacl: Removing leading '/' from absolute path names
+# file: root/acl-file
+# owner: root
+# group: root
+user::rw-
+user:vivek:rwx
+group::r--
+mask::rwx
+other::r--
+```
+
+Here we have set file access control list to the user Vivek although we have given permission user doesn't have permission to access /root file so we'll have to give that too by using
+
+```
+# setfacl -m u:vivek:x /root
+```
+Now user Vivek can access the root file and can create or do any thing because he got the permissions before this command for the previous file.
+
+Now to create a directory and make it as a ACL configuring directory when ever a file is created the ACL is given to that file
+
+```
+# mkdir /acl-dir
+# touch /acl-dir/acl-file1
+# setfacl -R -m u:vivek:rwx /acl-dir/      ---  But this will only create one file ACL configured to make the folder as one we should use 
+# setfacl -m d:u:vivek:rwx /acl-dir/       ---  It is configured as default ad in the command in 'd'.
+# touch /acl-dir/acl-file2
+# ls -ld /acl-dir/acl-file2                --- it should show + symbol at the end of the 10 bit 
+```
+
+## Questions from course 
+
+**Create file named private and directory riya_dir under /acl directory and Configure rw access for user riya on this file and Configure full access for user riya on this directory and all files(and Directories) under this directory and riya should have same access on future files and directories under same directory.**
+
+Explanation and answer:
+```
+# mkdir /root/acl
+# touch /root/acl/private
+# setfacl -m u:riya:rw /acl/private        --- To provide full access to user riya  
+# mkdir /root/acl/riya_dir
+# setfacl -R -m u:riya:rwx /acl/riya_dir   ---  To configure full access for user riya on dir and anything nder this
+#setfacl -m d:u:riya:rwx /acl/riya_dir       ---  To configure default access control list to apply ACL to future files and dir's inder this dir
+# getfacl /acl/private and getfacl /acl/riya_dir
+```
+
+## Hard and soft(symbolic) Links 
+
+Hard link is the link between filename and stored data in file. Filename is filed to physical address of a file through inode. inode is a data structure which stores metadata about the file. So, when we create a file, one hard link is created for it automatically. We can create many additional hard links for a file 
+
+Hard links can be created with in the filesystem and are allowed for files only.
+
+Soft link or symbolic link on the other hard points to some file or directory within or across filesystems.
+
+```
+# touch /root/hard-file
+# ln /root/hard-file hard-link             --- we have created a hard link to the file under root to the link in the /tmp we don't need to specify anything link h or some thin ln means it creates hardlink default
+# touch /root/soft-file
+# ln -s /root/soft-file soft-link          --- we have created a softfile under root and linked it with softlink under /tmp we need too specify the -s to be able t create soft link
+```
+
+## Question from course 
+
+**Create symbolic link for file /test/sym/link/sym-link in /root directory with default name.**
+
+Explanation and answer:
+```
+# mkdir -p /test/sym/link
+# touch /test/sym/link/sym-link
+# cd /root
+# ln -s /test/sym/link/sym-link
+```
+
+---
