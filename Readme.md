@@ -1116,7 +1116,6 @@ Default ACL's to configure access on directories
 # touch acl-file
 # ls -l acl-file
 # getfacl /root/acl-file
-```
 getfacl: Removing leading '/' from absolute path names
 # file: root/acl-file
 # owner: root
@@ -1124,11 +1123,11 @@ getfacl: Removing leading '/' from absolute path names
 user::rw-
 group::r--
 other::r--
-```
+
 # setfacl -m u:vivek:rwx /root/acl-file
 # ls -l acl-file
 # getfacl /root/acl-file
-```
+
 getfacl: Removing leading '/' from absolute path names
 # file: root/acl-file
 # owner: root
@@ -1201,3 +1200,4 @@ Explanation and answer:
 ```
 
 ---
+
