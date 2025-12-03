@@ -1201,3 +1201,219 @@ Explanation and answer:
 
 ---
 
+### Today 26-Nov-2025
+
+## Deploying, Configuring and Maintaining Systems
+
+**Introduction**
+-Introducing system and system units
+
+  systemd is system and service manager for Linux operationg systems and provies tooling for controlling, reporting and system initialization. system replacing upstart as system initialization program since RHEL 7
+
+systemd is the first process which is started during boot process and starts other system resources
+
+systemd manages the system through different objects, in general known as systemd units which are representation of system resources and services. systemd units consist of a name, type and configuration file that describes particular task.
+
+Different types of systemd units:
+-service :controls and manages different system services 
+-Target :Represents a group of units for specific system state.
+-Device :Manages hardware devices
+-Mount :Handles files systems mounting
+-Timer :Manages task scheduling
+
+ systemctl utility is used to manages the systemd units for example you as system admin can start/stop system services and enable system services to start at boot.same utility can be used to manage other systemd units.
+
+-start and stop services and configure services to start automatically at the boot
+
+```
+# systemctl list-units            ---  It display's all the loaded units 
+# systemctl list-units --type service    ---  It displays according to the type mentioned 
+# systemctl status autofs         ---  It display's if the service is active or not and enable at the boot and some other information.
+
+# systemctl start httpd           ---  It starts the service called httpd 
+# systemctl enable httpd          ---  It enable's the httpd service at the reboot and created a symlink fo it at the systemd file configurations
+# systemctl disable httpd         ---  It disables the httpd service at the reboot
+# systemctl stop httpd            ---  It stops the service
+```
+
+## Question from course 
+
+-Configure systems to boot into a specific target automatically 
+
+**Configure system to run in graphical target and make this setting persistent and system shoulf=d boot in same target on next reboot**
+
+Explanation and answer:
+```
+# dnf group install workstation      --- To install workstation environment 
+# systemctl isolate graphical.target     --- To change systemd target in current session 
+# systemctl set-default graphical.target     --- To set graphical target as default systemd target 
+# cd /usr/lib/systemd/system              --- Directory containing systemd units of install packages 
+# cd /etc/systemd/syatem                  --- Directory containing local systemd configurations
+# man systemd.unit                        --- Manual page for systemd units
+```
+
+---
+
+### Today 27-nov-2025
+
+## Schedule tasks using at and cron
+
+## Questions from course 
+
+**As root user, schedule a script /script.sh to run as user Vivek which should be executed every 25 minutes and script should execute echo "Vivek job is executed at $(date)" > /vivek_cron.**
+
+Explanation and answer:
+```
+# vim /script.sh                                        --- Create script file and add the required command 
+  echo "Vivek job executed at $(date)" > /vivek_cron
+  :wq
+# chmod +x /script.sh                                   --- Provide execution permissions on /script.sh
+# touch /vivek_cron and chown vivek:vivek:/vivek_cron   --- Create /vivek_cron and harry as user /group owner
+# crontab -u harry -e                                   --- Open Vivek cron tab as root user for editing                 and making entry in crontab file
+  */15 * * * * /script.sh
+  :wq
+# crontab -u vivek vivek -l                             --- List crontab of user Vivek 
+```
+
+**Schedule a script /access.sh as user riya which should be executed 12h 15 every Monday and only user riya should be allowed to use cron program and add command echo "riya's job executed at $(date)" > /home/riya/cron_riya in script /access.sh**
+
+Explanation and answer:
+```
+# vim /etc/cron.allow
+riya
+:wq
+# vim /access.sh
+echo "riya's job executed at $(date)" > /home/riya/cron_riya 
+:wq
+# setfacl -m u:riya:rx /access.sh 
+# su - riya 
+# crontab -l
+# crontab -e 
+15 12 * * 1 /access.sh
+:wq
+crontab -l
+```
+
+** Schedule below command using 'at' to execute 30 minutes from now : ps -ef > process.txt and check the queue of 'at' jobs to verify.**
+
+Explanation and answer:
+```
+# dnf install at
+# systemctl start atd
+# systemctl enable --now atd    --- To check if the atd is enable or not
+# systemctl status atd.service  --- To check status of atd
+# at now + 30 minutes           --- Execute at to schedule job
+at> ps -ef > process.txt      --- To savr ctrl+d
+# atq                           --- Display at jobs queue 
+# atrm                          --- To delete jobs 
+# man at                        --- manual pages for at 
+```
+
+
+---
+
+### Today 30-Nov-2025
+
+## Configuring system use time service
+
+## Questions from course 
+
+**Configure system to use to use NTP server configured on ipa server(ipa.server.com) and configure iburst option to make the initial synchronisation faster.**
+
+Explanation and answer:
+```
+# ssh bharath@192.168.159.10
+
+# systemctl status chronyd
+# timedatectl set-timezone TIME_ZONE
+# timedatectl set-time HH:MM:SS
+# hwclock -w 
+# vim /etc/chrony.conf
+server ipaserver.example.com iburst
+:wq
+# systemctl restart chronyd
+# vim /etc chrony.conf
+local stratum 10
+:wq
+# systemctl restart chronyd
+# chronyc sources
+```
+
+## Using DNF for package Management
+
+```
+# dnf repo list                      --- To list available software 
+# dnf list --all (dnf repoquery)     --- To list of packages and versions
+# dnf repoinfo REPO_NAME             --- To display additional info about repo
+# dnf install PACKAGE_NAME           --- To install software packages 
+# dnf froup list --hidden            --- To display all group packages
+# dnf group list --installed         --- To display all installed group packages
+# dnf provides list DAEMON_NAME      --- To display package name for daemon
+# dnf module list                    --- To list all available modules
+# dnf module info MODULE_NAME        --- To display module info 
+# dnf module install MODULE_NAME:STREAM/PROFILE           --- To install specific module stream and specific profile
+# dnf search nfs                    --- To search for pattern 
+# rpm -qa httpd                     --- to know the architecture 
+```
+
+**List the AppStream modules available in repo and list the different streams available for Php module and install available stream of php module with default profile.**
+
+```
+# dnf module list or yum module list          --- TO list all mmodules available in appstream repo
+# dnf module info php or yum module info php  --- To available stream for php module 
+# dnf module infp -profile php                --- To list info about module profiles
+# dnf module install php:STREAM/PROFILE       --- To install modules with specific stream and profile
+```
+
+---
+
+## Today 3-Dec-2025
+
+### Questions from course
+
+**Modify kernel command line parameters (kernel Boot parameters) not to boot the System with GUI Mode booting screen(remove rhgb) also, all boot messages should be shown on the screen(remove quiet) and disable the consistent device naming scheme so interface names(eth*) should be used (not recommended).**
+
+
+Explanation and answer:
+
+rhgb (redhat graphical boot) - This is a GUI mode booting screen with most of the information hidden while the user sees a
+rotating activity icon spinning and brief information as to what the computer is doing.
+
+quiet-hides most boot messages before rhgb starts. These are supposed to make the common user more comfortable.
+
+```
+# ls /boot/loader/entries/                              --- To see the version
+# vim .etc/default/grub
+Add biosdevname=0 and net.ifnames-0 to variable GRUB_CMDLINE_LINUX Remove rhgb
+:wq
+# grub2-mkconfig -o /boot/grub2/grub.cfg
+# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+# systemctl reboot
+```
+
+**Enable consistent network device naming scheme(disabled in previous task) by removing net.ifnames=0 from kernel command line parameters list and use grubby to perform this action.**
+
+Explanation and answer:
+```
+# grubby --info ALL                  --- To display indexed kernel bootloader entres
+# grubby --update-kernel+ALL -remove-args="net.ifnames=0"                  --- To remove parameter from all entries
+# grubby --update-kernel=/boot/vmlinuz-$(uname -r) --remove-args="net.ifnames=0"                  --- To remove parameters for single entry
+# ls -l /boot/loader/entries                  --- To list conf files of boot loader entries 
+# systemctl reboot                  --- Reboot the system
+```
+
+## Operating Running System 
+
+- Boot, reboot, and shut down a system normally 
+- Boot systems into different targets manually 
+- interrupt the boot process to gain access to system 
+- identify CPU/memory intensive process and kill processes 
+- Adjust process scheduling 
+- Manage tuning profiles 
+- Locate and interrupt system log files and journals
+- Preserve system journals 
+- start, stop, and check the status of network services
+- securely transfer files between systems 
+
+
+
