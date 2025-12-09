@@ -1415,5 +1415,86 @@ Explanation and answer:
 - start, stop, and check the status of network services
 - securely transfer files between systems 
 
+---
+
+## Today 9-Dec-2025
+
+***Reboot, Shutdown and Suspending System***
+
+```
+# systemctl reboot or shutdown -r now          --- To Reboot System
+# systemctl halt or shutdown --poweroff        --- To halt the system
+# systemctl poweroff or shutdown --poweroff    --- To power off system
+# systemctl suspend                            --- To suspend system
+# systemctl hibernate                          --- To hibernate system
+# shutdown --halt HH:MM                        --- To schedule system halt 
+# shutdown --halt+10                           --- To schedule system halt after 10 minutes
+# shutdown --halt+10"System will go down in 10 minutes"         --- To schedule system halt with message to users
+# shutdown -c                                  --- To cancel the scheduled shutdown command
+```
+
+***Booting system into different targets manually***
+
+Power on the vm and let it boot the grub menu and then press "e" to modify the entry of the line starting with Linux with "system.unit=rescue.target" or "system.unit=emergency.target" and then press ctrl+x or F10 to boot into these settings then you can do your things like going ito grub settings config files to fix the issues or any other things like if you are getting trouble in booting the os. So, these modifications are for one time only if you reboot it the settings go back to default.
+
+
+***Introducing the top command***
+
+```
+# man top
+# top 
+top - 20:28:54 up 57 min,  3 users,  load average: 0.45, 0.39, 0.16
+Tasks: 342 total,   1 running, 341 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.3 us,  2.7 sy,  0.0 ni, 95.7 id,  0.0 wa,  1.2 hi,  0.2 si,  0.0 st
+MiB Mem :   7645.4 total,   5791.9 free,   1478.7 used,    640.8 buff/cache
+MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   6166.7 avail Mem
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+     44 root      39  19       0      0      0 S   5.3   0.0   0:02.17 khugepa+
+   4304 root      20   0  621428  19036  15404 S   0.7   0.2   0:00.42 flatpak+
+   4379 redhat1   20   0  231588   5388   3340 R   0.7   0.1   0:00.41 top
+   1001 root      20   0  536356   8608   6944 S   0.3   0.1   0:10.17 vmtoolsd
+   2611 apache    20   0 1436128   7344   3984 S   0.3   0.1   0:01.83 httpd
+      1 root      20   0   49500  41692  10408 S   0.0   0.5   0:06.88 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.07 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_wo+
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      5 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      6 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      7 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      9 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+     11 root      20   0       0      0      0 I   0.0   0.0   0:00.00 kworker+
+     12 root      20   0       0      0      0 I   0.0   0.0   0:00.06 kworker+
+     13 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+     14 root      20   0       0      0      0 I   0.0   0.0   0:00.00 rcu_tas+
+
+
+mib - mebibyte
+PID - process id of the process
+PR  - priority 
+NI  - Nice value
+VIRT - virtual memory 
+RES  - residenat memory 
+s - sleeping , R - idle
+SHR - shared memory
+```
+
+
+## Question from course
+
+***Run CPU intensive process on system with nice value of -5 to give more CPU attention than default and change the niceness value to 5 so that CPU pays less attention to this process.***
+
+Explanation and answer:
+
+Niceness value:
+nice value can be given between -20 to 19. Lesser the NICE value, more CPU resources will be used. Higher the nice value, less CPU attention will be given. Never run process with nice value of -20, CPU will give highest priority and no other jobs will be able to run
+```
+# nice -n -5 dd if=/dev/zero of=/dev/null
+# renice -n 5 -p PID           or  top > click "r" in keyboard and give a value like 5 for now to a particular PID
+# top 
+```
+
+---
+
 
 
